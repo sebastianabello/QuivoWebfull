@@ -14,7 +14,6 @@
   "clean_filters": "Limpiar filtros",
   "price_night": "Precio por noche",
   "language": "Idioma",
-  "bookings": "Mis Reservas",
   "view_details": "Ver detalle",
   "page": "Página",
   "of": "de",
@@ -25,5 +24,8 @@
   "name": "Nombre",
   "mail": "Correo electrónico",
   "phone_number": "Teléfono",
-  "reservation": "Reservar"
+  "reservation": "Reservar",
+  "home": "Inicio",
+  "rooms": "Habitaciones",
+  "bookings": "Reservas"
 }

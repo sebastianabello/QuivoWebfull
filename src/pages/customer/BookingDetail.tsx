@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import { useTranslation } from "react-i18next";
 
 export default function BookingDetail() {
   const { reservationNumber } = useParams();
   const [booking, setBooking] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetch(`http://localhost:8989/bookings/api/bookings/${reservationNumber}`)
@@ -33,6 +36,13 @@ export default function BookingDetail() {
 
   return (
     <CustomerLayout>
+      <Breadcrumbs
+          paths={[
+            { name: t("home"), translationKey: "home", href: "/" },
+            { name: t("bookings"), translationKey: "bookings", href: "/bookings" },
+            { name: `${t("reservation")} #${booking.reservationNumber}` }
+          ]}
+        />
       <div className="max-w-3xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-4">Reserva confirmada</h1>
         <p className="text-gray-600 mb-4">Número de reserva: <strong>{booking.reservationNumber}</strong></p>

@@ -25,5 +25,7 @@
   "name": "Name",
   "mail": "Email",
   "phone_number": "Phone number",
-  "reservation": "Reserve"
+  "home": "Home",
+  "rooms": "Rooms",
+  "reservation": "Reservation"
 }

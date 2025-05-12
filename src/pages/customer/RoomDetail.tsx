@@ -1,9 +1,11 @@
-// pages/customer/RoomDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
 import { Room } from "../../types/Room";
 import BookingBox from "../../components/BookingBox";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import { useTranslation } from "react-i18next";
+
 
 interface RoomWithGallery extends Room {
   gallery?: string[]; // array opcional de imágenes adicionales
@@ -12,6 +14,8 @@ interface RoomWithGallery extends Room {
 export default function RoomDetail() {
   const { code } = useParams();
   const [room, setRoom] = useState<RoomWithGallery | null>(null);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     fetch(`http://localhost:8989/inventory/api/rooms/${code}`)
@@ -34,8 +38,14 @@ export default function RoomDetail() {
 
         {/* Columna principal: galería + detalles */}
         <div className="lg:col-span-2">
+          <Breadcrumbs
+            paths={[
+              { name: t("home"), translationKey: "home", href: "/" },
+              { name: t("rooms"), translationKey: "rooms", href: "/" },
+              { name: room.name }
+            ]}
+          />
           <h1 className="text-2xl md:text-3xl font-bold mb-2">{room.name}</h1>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-6">
             <img
               src={room.imageUrl}

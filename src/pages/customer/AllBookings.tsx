@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
+import Breadcrumbs from "../../components/Breadcrumbs";
+import { useTranslation } from "react-i18next";
 
 interface BookingSummary {
   reservationNumber: string;
@@ -20,6 +22,8 @@ export default function AllBookings() {
   const [reservations, setReservations] = useState<BookingDetail[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const loadReservations = async () => {
@@ -54,6 +58,12 @@ export default function AllBookings() {
 
   return (
     <CustomerLayout>
+      <Breadcrumbs
+          paths={[
+          { name: t("home"), translationKey: "home", href: "/" },
+          { name: t("bookings"), translationKey: "bookings", href: "/bookings" },
+        ]}
+      />
       <h1 className="text-2xl font-bold mb-6">Todas las reservas</h1>
 
       {loading ? (
