@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import logo from "../assets/logo.svg";
@@ -10,10 +11,16 @@ interface Props {
 }
 
 export default function CustomerLayout({ children, headerContent }: Props) {
+  const { t, i18n } = useTranslation();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const langRef = useRef(null);
   const userRef = useRef(null);
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    setShowLangMenu(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -39,26 +46,27 @@ export default function CustomerLayout({ children, headerContent }: Props) {
 
         {/* CENTRO DINÁMICO */}
         <div className="absolute left-1/2 -translate-x-1/2 transform -translate-y-1/2 top-1/2 hidden md:block">
-          <AnimatePresence mode="wait">
-            {headerContent}
-          </AnimatePresence>
+          <AnimatePresence mode="wait">{headerContent}</AnimatePresence>
         </div>
 
-
-        {/* DERECHA: Icono idioma + Login */}
+        {/* DERECHA: Idioma + Usuario */}
         <div className="flex items-center gap-3">
           <div className="relative" ref={langRef}>
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
               className="text-gray-700 hover:text-teal-600"
-              title="Cambiar idioma"
+              title={t("language")}
             >
               <MdLanguage className="text-xl" />
             </button>
             {showLangMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded shadow-md text-sm z-50">
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Español</button>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">English</button>
+                <button onClick={() => changeLanguage("es")} className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  Español
+                </button>
+                <button onClick={() => changeLanguage("en")} className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  English
+                </button>
               </div>
             )}
           </div>
@@ -68,16 +76,22 @@ export default function CustomerLayout({ children, headerContent }: Props) {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="px-4 py-1 rounded bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 transition"
             >
-              Login
+              {t("login")}
             </button>
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-56 bg-white rounded shadow-md text-sm z-50">
-                <Link to="/login" className="block px-4 py-2 hover:bg-gray-100">Inicia sesión</Link>
-                <Link to="/register" className="block px-4 py-2 hover:bg-gray-100">Regístrate</Link>
+                <Link to="/login" className="block px-4 py-2 hover:bg-gray-100">{t("login")}</Link>
+                <Link to="/register" className="block px-4 py-2 hover:bg-gray-100">{t("logout")}</Link>
                 <hr className="my-1 border-t border-gray-300" />
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Organiza una experiencia</button>
-                <Link to="/bookings" className="block px-4 py-2 hover:bg-gray-100">Consultar reservas</Link>
-                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">Centro de ayuda</button>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  {t("host_experience")}
+                </button>
+                <Link to="/bookings" className="block px-4 py-2 hover:bg-gray-100">
+                  {t("bookings")}
+                </Link>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  {t("help_center")}
+                </button>
               </div>
             )}
           </div>

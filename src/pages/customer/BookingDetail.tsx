@@ -34,7 +34,7 @@ export default function BookingDetail() {
   return (
     <CustomerLayout>
       <div className="max-w-3xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-4">Reserva confirmada 🎉</h1>
+        <h1 className="text-2xl font-bold mb-4">Reserva confirmada</h1>
         <p className="text-gray-600 mb-4">Número de reserva: <strong>{booking.reservationNumber}</strong></p>
 
         <h2 className="font-semibold text-lg mb-2">Detalles</h2>

@@ -1,5 +1,5 @@
-// components/BookingBox.tsx
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Room } from "../types/Room";
 import { DateRange } from "react-date-range";
 import { addDays, format, differenceInCalendarDays } from "date-fns";
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function BookingBox({ room }: Props) {
+  const { t } = useTranslation();
   const [guest, setGuest] = useState(1);
   const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
   const [errors, setErrors] = useState({ name: "", email: "", phone: "" });
@@ -110,12 +111,12 @@ export default function BookingBox({ room }: Props) {
   return (
     <div className="border p-4 rounded-xl shadow-md w-full max-w-md">
       <h2 className="text-xl font-semibold text-gray-800 mb-3">
-        ${room.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">por noche</span>
+        ${room.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">{t("price_night")}</span>
       </h2>
 
       {/* Fechas */}
       <div className="mb-4 relative" ref={calendarRef}>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Fechas</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t("date")}</label>
         <button
           onClick={() => setShowCalendar(!showCalendar)}
           className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-left bg-white"
@@ -147,7 +148,7 @@ export default function BookingBox({ room }: Props) {
 
       {/* Huéspedes */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Huéspedes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t("guests")}</label>
         <select
           value={guest}
           onChange={(e) => setGuest(Number(e.target.value))}
@@ -155,7 +156,7 @@ export default function BookingBox({ room }: Props) {
         >
           {[1, 2, 3, 4, 5].map((g) => (
             <option key={g} value={g}>
-              {g} huésped{g > 1 ? "es" : ""}
+              {g} {t("guests")}{g > 1 ? "s" : ""}
             </option>
           ))}
         </select>
@@ -163,7 +164,7 @@ export default function BookingBox({ room }: Props) {
 
       {/* Cliente */}
       <div className="mb-2">
-        <label className="text-sm font-medium text-gray-700 block mb-1">Nombre</label>
+        <label className="text-sm font-medium text-gray-700 block mb-1">{t("name")}</label>
         <input
           type="text"
           value={customer.name}
@@ -174,7 +175,7 @@ export default function BookingBox({ room }: Props) {
       </div>
 
       <div className="mb-2">
-        <label className="text-sm font-medium text-gray-700 block mb-1">Correo electrónico</label>
+        <label className="text-sm font-medium text-gray-700 block mb-1">{t("mail")}</label>
         <input
           type="email"
           value={customer.email}
@@ -185,7 +186,7 @@ export default function BookingBox({ room }: Props) {
       </div>
 
       <div className="mb-4">
-        <label className="text-sm font-medium text-gray-700 block mb-1">Teléfono</label>
+        <label className="text-sm font-medium text-gray-700 block mb-1">{t("phone_number")}</label>
         <input
           type="tel"
           value={customer.phone}
@@ -201,7 +202,7 @@ export default function BookingBox({ room }: Props) {
         disabled={loading}
         className="w-full bg-gradient-to-r bg-teal-700 hover:bg-teal-600 text-white font-semibold py-2 rounded text-sm"
       >
-        {loading ? "Reservando..." : "Reserva"}
+        {loading ? "Reservando..." : "Reserved"}
       </button>
     </div>
   );

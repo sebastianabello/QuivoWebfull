@@ -1,42 +1,55 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import CustomerLayout from "../../layouts/CustomerLayout";
 
-interface BookingItem {
-  code: string;
-  name: string;
-  price: number;
-  guest: number;
+interface BookingSummary {
+  reservationNumber: string;
+  status: string;
 }
 
-interface Booking {
+interface BookingDetail {
   reservationNumber: string;
-  customer: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-  items: BookingItem[];
-  check: {
-    in_date: string;
-    out_date: string;
-  };
+  customer: { name: string };
+  check: { in_date: string; out_date: string };
+  totalAmount: number;
   status: string;
   createdAt: string;
-  totalAmount: number;
 }
 
 export default function AllBookings() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [reservations, setReservations] = useState<BookingDetail[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8989/bookings/api/bookings")
-      .then((res) => res.json())
-      .then((data) => {
-        setBookings(data || []);
-      })
-      .catch((err) => console.error("Error al cargar reservas:", err))
-      .finally(() => setLoading(false));
+    const loadReservations = async () => {
+      try {
+        const res = await fetch("http://localhost:8989/bookings/api/bookings");
+        const summaryList: BookingSummary[] = await res.json();
+
+        const detailedBookings: BookingDetail[] = [];
+
+        for (const summary of summaryList) {
+          try {
+            const detailRes = await fetch(
+              `http://localhost:8989/bookings/api/bookings/${summary.reservationNumber}`
+            );
+            const detail = await detailRes.json();
+            detailedBookings.push(detail);
+          } catch (err) {
+            console.warn("No se pudo cargar reserva:", summary.reservationNumber);
+          }
+        }
+
+        setReservations(detailedBookings);
+      } catch (error) {
+        console.error("Error al obtener reservas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReservations();
   }, []);
 
   return (
@@ -45,14 +58,14 @@ export default function AllBookings() {
 
       {loading ? (
         <p className="text-gray-500">Cargando reservas...</p>
-      ) : bookings.length === 0 ? (
+      ) : reservations.length === 0 ? (
         <p className="text-gray-500">No hay reservas registradas.</p>
       ) : (
         <div className="space-y-4">
-          {bookings.map((booking) => (
+          {reservations.map((booking) => (
             <div
               key={booking.reservationNumber}
-              className="border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+              className="border-gray-400 rounded-lg p-4 shadow-sm hover:shadow-md transition"
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="font-semibold text-teal-700">
@@ -71,9 +84,16 @@ export default function AllBookings() {
               <p className="text-sm text-gray-600 mb-1">
                 <strong>Total:</strong> ${booking.totalAmount.toLocaleString()}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 mb-3">
                 <strong>Estado:</strong> {booking.status}
               </p>
+
+              <button
+                onClick={() => navigate(`/booking/${booking.reservationNumber}`)}
+                className="px-4 py-1 bg-teal-600 text-white text-sm rounded hover:bg-teal-700 transition"
+              >
+                Ver detalle
+              </button>
             </div>
           ))}
         </div>
