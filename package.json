@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-keycloak/web": "^3.4.0",
     "@tailwindcss/vite": "^4.1.5",
     "axios": "^1.9.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.9.4",
     "i18next": "^25.1.1",
     "i18next-browser-languagedetector": "^8.1.0",
+    "keycloak-js": "^26.2.0",
     "react": "^19.0.0",
     "react-date-range": "^2.0.1",
     "react-dom": "^19.0.0",
