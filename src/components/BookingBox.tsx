@@ -13,10 +13,15 @@ interface Props {
 
 export default function BookingBox({ room }: Props) {
   const { keycloak } = useKeycloak();
-  const isAuthenticated = keycloak?.authenticated;
+  const isAuthenticated = keycloak.authenticated;
+  const tokenParsed = keycloak.tokenParsed as { preferred_username?: string; email?: string; name?: string };
 
   const [guest, setGuest] = useState(1);
-  const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
+  const [customer, setCustomer] = useState({
+    name: tokenParsed?.name || "",
+    email: tokenParsed?.email || "",
+    phone: ""
+  });
   const [errors, setErrors] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -40,16 +45,6 @@ export default function BookingBox({ room }: Props) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    if (isAuthenticated && keycloak.tokenParsed) {
-      setCustomer((prev) => ({
-        ...prev,
-        name: keycloak.tokenParsed.given_name || keycloak.tokenParsed.name || "",
-        email: keycloak.tokenParsed.email || "",
-      }));
-    }
-  }, [isAuthenticated, keycloak.tokenParsed]);
 
   const validateFields = () => {
     const newErrors = { name: "", email: "", phone: "" };
@@ -76,7 +71,7 @@ export default function BookingBox({ room }: Props) {
   };
 
   const handleBooking = async () => {
-    if (!isAuthenticated) return keycloak.login({ redirectUri: window.location.href });
+    if (!isAuthenticated) return keycloak.login();
 
     const start = range[0].startDate;
     const end = range[0].endDate;
@@ -124,12 +119,18 @@ export default function BookingBox({ room }: Props) {
         ${room.price.toLocaleString()} <span className="text-sm font-normal text-gray-500">por noche</span>
       </h2>
 
+      {!isAuthenticated && (
+        <div className="text-sm text-red-600 mb-4">
+          Debes iniciar sesión para completar la reserva.
+        </div>
+      )}
+
       {/* Fechas */}
       <div className="mb-4 relative" ref={calendarRef}>
         <label className="block text-sm font-medium text-gray-700 mb-1">Fechas</label>
         <button
-          onClick={() => setShowCalendar(!showCalendar)}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-left bg-white"
+          onClick={() => isAuthenticated && setShowCalendar(!showCalendar)}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm text-left bg-white disabled:bg-gray-100"
           disabled={!isAuthenticated}
         >
           {format(range[0].startDate!, 'dd/MM/yyyy')} - {format(range[0].endDate!, 'dd/MM/yyyy')}
@@ -141,7 +142,11 @@ export default function BookingBox({ room }: Props) {
               editableDateInputs={true}
               onChange={(item) => {
                 setRange([item.selection]);
-                if (item.selection.startDate && item.selection.endDate && item.selection.startDate !== item.selection.endDate) {
+                if (
+                  item.selection.startDate &&
+                  item.selection.endDate &&
+                  item.selection.startDate !== item.selection.endDate
+                ) {
                   setShowCalendar(false);
                 }
               }}
@@ -159,8 +164,8 @@ export default function BookingBox({ room }: Props) {
         <select
           value={guest}
           onChange={(e) => setGuest(Number(e.target.value))}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
           disabled={!isAuthenticated}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
         >
           {[1, 2, 3, 4, 5].map((g) => (
             <option key={g} value={g}>
@@ -177,8 +182,8 @@ export default function BookingBox({ room }: Props) {
           type="text"
           value={customer.name}
           onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
           disabled={!isAuthenticated}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
         />
         {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
       </div>
@@ -188,8 +193,8 @@ export default function BookingBox({ room }: Props) {
         <input
           type="email"
           value={customer.email}
-          readOnly
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-100 cursor-not-allowed"
+          disabled
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-gray-100"
         />
         {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
       </div>
@@ -200,8 +205,8 @@ export default function BookingBox({ room }: Props) {
           type="tel"
           value={customer.phone}
           onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
           disabled={!isAuthenticated}
+          className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
         />
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>

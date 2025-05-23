@@ -13,7 +13,7 @@ interface Props {
 
 export default function CustomerLayout({ children, headerContent }: Props) {
   const { t, i18n } = useTranslation();
-  const { keycloak } = useKeycloak(); // ✅ Se usa hook
+  const { keycloak } = useKeycloak();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const langRef = useRef(null);
@@ -21,6 +21,8 @@ export default function CustomerLayout({ children, headerContent }: Props) {
   const navigate = useNavigate();
 
   const isAuthenticated = keycloak?.authenticated;
+  const roles = keycloak?.tokenParsed?.realm_access?.roles || [];
+  const isAdmin = roles.includes("adminn");
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -79,7 +81,7 @@ export default function CustomerLayout({ children, headerContent }: Props) {
           <div className="relative" ref={userRef}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="px-4 py-1 rounded bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 transition"
+              className="min-w-[100px] px-4 py-1 rounded bg-teal-600 text-white text-sm font-bold hover:bg-teal-700 transition text-ellipsis overflow-hidden"
             >
               {isAuthenticated ? keycloak?.tokenParsed?.preferred_username : t("login")}
             </button>
@@ -97,6 +99,11 @@ export default function CustomerLayout({ children, headerContent }: Props) {
                     <Link to="/bookings" className="block px-4 py-2 hover:bg-gray-100">
                       {t("bookings")}
                     </Link>
+                    {isAdmin && (
+                      <Link to="/admin/rooms" className="hidden md:inline-block px-3 py-1 text-sm bg-teal-50 text-teal-700 border border-teal-600 rounded hover:bg-teal-100">
+                        Panel Admin
+                      </Link>
+                    )}
                   </>
                 )}
                 <hr className="my-1 border-t border-gray-300" />
