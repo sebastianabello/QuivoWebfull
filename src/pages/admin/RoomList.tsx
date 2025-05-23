@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import CustomerLayout from "../../layouts/CustomerLayout";
+
 
 interface Room {
   code: string;
@@ -34,24 +36,44 @@ export default function RoomList() {
     }
   };
 
-  const handleDelete = async (code: string) => {
-    const confirmed = confirm("¿Estás seguro de eliminar esta habitación?");
-    if (!confirmed) return;
-
-    try {
-      const res = await fetch(`http://localhost:8989/inventory/api/rooms/${code}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        toast.success("Habitación eliminada");
-        fetchRooms(currentPage);
-      } else {
-        toast.error("No se pudo eliminar la habitación");
-      }
-    } catch (error) {
-      toast.error("Error al eliminar habitación");
-    }
+  const handleDelete = (code: string) => {
+    toast.custom((t) => (
+      <div className="bg-white shadow-lg rounded-lg p-4 border max-w-sm w-full">
+        <p className="text-sm text-gray-800 mb-3">¿Seguro que deseas eliminar esta habitación?</p>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              const loadingId = toast.loading("Eliminando...");
+              try {
+                const res = await fetch(`http://localhost:8989/inventory/api/rooms/${code}`, {
+                  method: "DELETE",
+                });
+                if (res.ok) {
+                  toast.success("Habitación eliminada", { id: loadingId });
+                  fetchRooms(currentPage);
+                } else {
+                  toast.error("No se pudo eliminar", { id: loadingId });
+                }
+              } catch {
+                toast.error("Error al eliminar", { id: loadingId });
+              }
+            }}
+            className="px-3 py-1 text-sm rounded bg-red-600 text-white hover:bg-red-700"
+          >
+            Sí, eliminar
+          </button>
+        </div>
+      </div>
+    ));
   };
+
 
   useEffect(() => {
     fetchRooms(currentPage);
@@ -64,6 +86,7 @@ export default function RoomList() {
   });
 
   return (
+    <CustomerLayout>
     <div className="max-w-5xl mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Gestión de Habitaciones</h1>
@@ -102,7 +125,7 @@ export default function RoomList() {
             {filteredRooms.map((room) => (
               <div
                 key={room.code}
-                className="border rounded p-4 flex justify-between items-center shadow-sm"
+                className="rounded p-4 flex justify-between items-center shadow-sm"
               >
                 <div>
                   <h2 className="font-semibold text-lg">{room.name}</h2>
@@ -115,13 +138,13 @@ export default function RoomList() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => navigate(`/admin/rooms/edit/${room.code}`)}
-                    className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+                    className="px-3 py-1 bg-teal-600 text-white rounded hover:bg-teal-700"
                   >
                     Editar
                   </button>
                   <button
                     onClick={() => handleDelete(room.code)}
-                    className="px-3 py-1 bg-red-600 text-white rounded text-sm"
+                    className="px-3 py-1 bg-teal-800 text-white rounded hover:bg-red-700"
                   >
                     Eliminar
                   </button>
@@ -152,5 +175,6 @@ export default function RoomList() {
         </>
       )}
     </div>
+    </CustomerLayout>
   );
 }

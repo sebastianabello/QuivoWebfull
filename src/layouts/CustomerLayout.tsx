@@ -100,7 +100,7 @@ export default function CustomerLayout({ children, headerContent }: Props) {
                       {t("bookings")}
                     </Link>
                     {isAdmin && (
-                      <Link to="/admin/rooms" className="hidden md:inline-block px-3 py-1 text-sm bg-teal-50 text-teal-700 border border-teal-600 rounded hover:bg-teal-100">
+                      <Link to="/admin/rooms" className="block w-full text-left px-4 py-2 hover:bg-gray-100">
                         Panel Admin
                       </Link>
                     )}

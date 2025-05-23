@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import CustomerLayout from "../../layouts/CustomerLayout";
 
 interface RoomFormData {
   code: string;
@@ -75,6 +76,8 @@ export default function RoomForm() {
   }, [code]);
 
   return (
+    <CustomerLayout>
+
     <div className="max-w-xl mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-4">
         {isEditing ? "Editar habitación" : "Nueva habitación"}
@@ -162,5 +165,6 @@ export default function RoomForm() {
         </button>
       </form>
     </div>
+    </CustomerLayout>
   );
 }
