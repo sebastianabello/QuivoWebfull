@@ -14,14 +14,9 @@ interface Props {
 export default function BookingBox({ room }: Props) {
   const { keycloak } = useKeycloak();
   const isAuthenticated = keycloak.authenticated;
-  const tokenParsed = keycloak.tokenParsed as { preferred_username?: string; email?: string; name?: string };
 
   const [guest, setGuest] = useState(1);
-  const [customer, setCustomer] = useState({
-    name: tokenParsed?.name || "",
-    email: tokenParsed?.email || "",
-    phone: ""
-  });
+  const [customer, setCustomer] = useState({ name: "", email: "", phone: "" });
   const [errors, setErrors] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -35,6 +30,16 @@ export default function BookingBox({ room }: Props) {
       color: '#0f766e',
     },
   ]);
+
+  useEffect(() => {
+    if (isAuthenticated && keycloak.tokenParsed) {
+      setCustomer((prev) => ({
+        ...prev,
+        name: keycloak.tokenParsed?.name || "",
+        email: keycloak.tokenParsed?.email || "",
+      }));
+    }
+  }, [isAuthenticated, keycloak.tokenParsed]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -125,7 +130,6 @@ export default function BookingBox({ room }: Props) {
         </div>
       )}
 
-      {/* Fechas */}
       <div className="mb-4 relative" ref={calendarRef}>
         <label className="block text-sm font-medium text-gray-700 mb-1">Fechas</label>
         <button
@@ -158,7 +162,6 @@ export default function BookingBox({ room }: Props) {
         )}
       </div>
 
-      {/* Huéspedes */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">Huéspedes</label>
         <select
@@ -175,7 +178,6 @@ export default function BookingBox({ room }: Props) {
         </select>
       </div>
 
-      {/* Cliente */}
       <div className="mb-2">
         <label className="text-sm font-medium text-gray-700 block mb-1">Nombre</label>
         <input
@@ -211,7 +213,6 @@ export default function BookingBox({ room }: Props) {
         {errors.phone && <p className="text-sm text-red-500 mt-1">{errors.phone}</p>}
       </div>
 
-      {/* Botón */}
       <button
         onClick={handleBooking}
         disabled={loading}
