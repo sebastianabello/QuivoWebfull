@@ -10,6 +10,8 @@ import CreateRoom from './pages/admin/CreateRoom.tsx';
 import EditRoom from './pages/admin/EditRoom.tsx';
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from './components/AdminRoute.tsx';
+import Unauthorized from './pages/errors/Unauthorized';
+
 
 function App() {
   return (
@@ -44,6 +46,7 @@ function App() {
             </PrivateRoute>
           }
         />
+
 
         <Route
           path="/admin/rooms"

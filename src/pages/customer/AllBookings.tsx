@@ -28,7 +28,7 @@ export default function AllBookings() {
   useEffect(() => {
     const loadReservations = async () => {
       try {
-        const res = await fetch("http://localhost:8989/bookings/api/bookings");
+        const res = await fetch(`http://localhost:8989/bookings/api/bookings`);
         const summaryList: BookingSummary[] = await res.json();
 
         const detailedBookings: BookingDetail[] = [];
@@ -36,7 +36,7 @@ export default function AllBookings() {
         for (const summary of summaryList) {
           try {
             const detailRes = await fetch(
-              `http://localhost:8989/bookings/api/bookings/${summary.reservationNumber}`
+              `http://localhost:8989/${summary.reservationNumber}`
             );
             const detail = await detailRes.json();
             detailedBookings.push(detail);

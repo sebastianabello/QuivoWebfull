@@ -99,7 +99,7 @@ export default function BookingBox({ room }: Props) {
         checkDate: { in_date: inDate, out_date: outDate },
       };
 
-      const res = await fetch("http://localhost:8989/bookings/api/bookings", {
+      const res = await fetch(`http://localhost:8989/bookings/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

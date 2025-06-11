@@ -55,7 +55,7 @@ export default function EditBooking() {
 
     try {
       const res = await fetch(
-        `http://localhost:8989/bookings/api/bookings/${reservationNumber}`,
+        `http://localhost:8989//bookings/api/bookings/${reservationNumber}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
